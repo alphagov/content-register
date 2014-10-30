@@ -11,9 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20141030105134) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "entries", force: true do |t|
+    t.string   "content_id", null: false
+    t.string   "title",      null: false
+    t.string   "format",     null: false
+    t.string   "base_path"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "entries", ["content_id"], name: "index_entries_on_content_id", unique: true, using: :btree
+  add_index "entries", ["format"], name: "index_entries_on_format", using: :btree
 
 end
