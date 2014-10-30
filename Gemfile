@@ -1,26 +1,25 @@
 source 'https://rubygems.org'
 
-
 gem 'rails', '4.1.5'
+gem 'rails-api', '0.2.1'
 
-gem 'rails-api'
+gem 'pg', '0.17.1'
 
-gem 'spring', :group => :development
+gem 'logstasher', '0.5.0'
+gem 'airbrake', '4.0.0'
+gem 'plek', '~> 1.9'
 
+gem 'unicorn', '4.8.2'
 
+group :development do
+  gem 'spring'
+end
 
+group :development, :test do
+  gem 'rspec-rails', '~> 3.0.2'
+  gem 'factory_girl', '~> 4.4.0'
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.1.2'
-
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Deploy with Capistrano
-# gem 'capistrano', :group => :development
-
-# To use debugger
-# gem 'ruby-debug19', :require => 'ruby-debug'
+  gem 'simplecov', '0.8.2', :require => false
+  gem 'simplecov-rcov', '0.2.3', :require => false
+  gem 'ci_reporter', '1.9.2'
+end
