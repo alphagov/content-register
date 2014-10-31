@@ -1,12 +1,34 @@
+require 'bunny'
 require 'childprocess'
 
 module MessageQueueHelpers
 
   def put_message_on_queue(message_data)
-    # no-op for now
+    routing_key = "#{message_data["format"]}.#{message_data["update_type"]}"
+    MessageQueueHelpers.exchange.publish(
+      message_data.to_json,
+      :routing_key => routing_key,
+      :content_type => 'application/json',
+    )
   end
 
   class << self
+    def exchange
+      @exchange ||= channel.topic(config[:exchange], :passive => true)
+    end
+
+    def channel
+      @channel ||= connection.create_channel
+    end
+
+    def connection
+      @connection ||= Bunny.new(config).start
+    end
+
+    def config
+      @config ||= YAML.load_file(Rails.root.join('config', 'rabbitmq.yml'))[Rails.env].symbolize_keys
+    end
+
     def included(base)
       base.extend(ExampleGroupMethods)
     end
