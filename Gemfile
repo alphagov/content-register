@@ -19,6 +19,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.0.2'
   gem 'factory_girl_rails', '~> 4.5.0'
   gem 'shoulda-matchers', require: false
+  gem 'childprocess', '~> 0.5.5'
 
   gem 'simplecov', '0.8.2', :require => false
   gem 'simplecov-rcov', '0.2.3', :require => false

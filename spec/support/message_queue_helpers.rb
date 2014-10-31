@@ -1,3 +1,5 @@
+require 'childprocess'
+
 module MessageQueueHelpers
 
   def put_message_on_queue(message_data)
@@ -12,12 +14,21 @@ module MessageQueueHelpers
 
   module ExampleGroupMethods
     def start_message_consumer_around_all
-      before :each do
-        # start consumer
+      process = nil
+
+      before :all do
+        puts "Starting message consumer"
+        ChildProcess.posix_spawn = true
+        process = ChildProcess.build("ruby", "-S", "bundle", "exec", "rake", "message_queue:consumer")
+        process.leader = true
+        process.start
       end
 
-      after :each do
-        # stop consumer
+      after :all do
+        if process && process.alive?
+          puts "Stopping message consumer"
+          process.stop
+        end
       end
     end
   end
