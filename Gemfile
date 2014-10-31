@@ -17,7 +17,7 @@ end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.2'
-  gem 'factory_girl', '~> 4.4.0'
+  gem 'factory_girl_rails', '~> 4.5.0'
   gem 'shoulda-matchers', require: false
 
   gem 'simplecov', '0.8.2', :require => false
