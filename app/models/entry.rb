@@ -1,4 +1,6 @@
 class Entry < ActiveRecord::Base
+
+  PUBLIC_ATTRIBUTES = [:content_id, :title, :format, :base_path]
   UUID_REGEX = %r{
     [a-f\d]{8}
     -
@@ -15,4 +17,10 @@ class Entry < ActiveRecord::Base
 
   validates_presence_of :content_id, :title, :format
   validates_format_of :content_id, with: /\A#{UUID_REGEX}\z/
+
+  def as_json(options = {})
+    super(options.merge(only: PUBLIC_ATTRIBUTES)).tap do |as_json_hash|
+      as_json_hash['errors'] = errors.to_h.stringify_keys if errors.present?
+    end
+  end
 end
