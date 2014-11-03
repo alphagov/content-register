@@ -18,6 +18,7 @@ end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.2'
+  gem 'database_cleaner', '~> 1.3'
   gem 'factory_girl_rails', '~> 4.5.0'
   gem 'shoulda-matchers', require: false
   gem 'childprocess', '~> 0.5.5'
