@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Consuming messages from the publishing-api message queue", :message_queue, :skip => true do
+describe "Consuming messages from the publishing-api message queue", :message_queue do
 
   start_message_consumer_around_all
 
