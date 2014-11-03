@@ -8,7 +8,6 @@ that is either on GOV.UK already, or is being written for it:
 * `content_id`
 * `title`
 * `format`
-* `state`: one of 'draft' or 'live'
 * optionally, `base_path`
 
 ## Adding content items to the content register
