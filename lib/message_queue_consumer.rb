@@ -1,4 +1,29 @@
+require 'rabbitmq_consumer'
+
 class MessageQueueConsumer
+
+  def self.run
+    config = YAML.load_file(Rails.root.join('config', 'rabbitmq.yml'))[Rails.env]
+
+    new(config).run
+  end
+
+  def initialize(config)
+    @config = config.with_indifferent_access
+    connection = Bunny.new(@config)
+    connection.start
+    consumer_config = {
+      :queue => @config.fetch(:queue),
+      :bindings => {
+        @config.fetch(:exchange) => "#",
+      },
+    }
+    @rmq_consumer = RabbitmqConsumer.new(connection, Processor.new, consumer_config)
+  end
+
+  def run
+    @rmq_consumer.run
+  end
 
   class Processor
 
