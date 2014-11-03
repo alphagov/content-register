@@ -41,9 +41,13 @@ module MessageQueueHelpers
       before :all do
         puts "Starting message consumer"
         ChildProcess.posix_spawn = true
+        r, w = IO.pipe
         process = ChildProcess.build("ruby", "-S", "bundle", "exec", "rake", "message_queue:consumer")
+        process.io.stdout = w
         process.leader = true
         process.start
+        r.readline # Rails has booted in child app when this returns
+        sleep 1 # extra sleep to allow queue to be created
       end
 
       after :all do
