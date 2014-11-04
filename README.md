@@ -36,3 +36,12 @@ To retrieve entries from the content register, make a GET request:
 ```
 
 Examples of the JSON response can be found in [doc/output_example.json](doc/output_example.json).
+
+## Listening to the message queue
+
+This app has a worker to listen to messages that content-store publishes to the
+published_documents exchange on RabbitMQ.  To start the worker in development run
+
+``` sh
+bundle exec rake message_queue:consumer
+```
