@@ -10,7 +10,7 @@ class MessageQueueConsumer
 
   def initialize(config)
     @config = config.with_indifferent_access
-    connection = Bunny.new(@config)
+    connection = Bunny.new(@config[:connection].symbolize_keys)
     connection.start
     consumer_config = {
       :queue => @config.fetch(:queue),

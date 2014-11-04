@@ -22,7 +22,7 @@ module MessageQueueHelpers
     end
 
     def connection
-      @connection ||= Bunny.new(config).start
+      @connection ||= Bunny.new(config[:connection].symbolize_keys).start
     end
 
     def config
