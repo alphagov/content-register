@@ -1,0 +1,14 @@
+[
+  {
+    "content_id": "a5d86183-7252-4426-aad2-3f732f7f2581",
+    "title": "Content Title",
+    "format": "news-article",
+    "base_path": "/path-on-gov-uk"
+  },
+  {
+    "content_id": "000b4062-8eaa-45ea-ba3c-7c6683a8cbbe",
+    "title": "Content Title 2",
+    "format": "news-article",
+    "base_path": "/path-on-gov-uk-2"
+  }
+]
