@@ -1,0 +1,6 @@
+// PUT /entry/a5d86183-7252-4426-aad2-3f732f7f2581
+{
+  "title": "Content Title",
+  "format": "the format of this content",
+  "base_path": "/path-on-gov-uk"
+}
