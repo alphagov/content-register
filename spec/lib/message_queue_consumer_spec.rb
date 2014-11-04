@@ -15,12 +15,14 @@ describe MessageQueueConsumer do
 
   describe "constructing an instance" do
     let(:config) {{
-      "hosts" => ["rabbitmq1.example.com", "rabbitmq2.example.com"],
-      "port" => 5672,
-      "vhost" => "/",
-      "user" => "a_user",
-      "pass" => "super secret",
-      "recover_from_connection_close" => true,
+      "connection" => {
+        "hosts" => ["rabbitmq1.example.com", "rabbitmq2.example.com"],
+        "port" => 5672,
+        "vhost" => "/",
+        "user" => "a_user",
+        "pass" => "super secret",
+        "recover_from_connection_close" => true,
+      },
       "queue" => "content_register",
       "exchange" => "published_documents",
     }}
@@ -30,7 +32,8 @@ describe MessageQueueConsumer do
     end
 
     it "connects to rabbitmq" do
-      expect(Bunny).to receive(:new).with(config).and_return(rabbitmq_connecton)
+      expected_options = config["connection"].symbolize_keys # Bunny requires the keys to be symbols
+      expect(Bunny).to receive(:new).with(expected_options).and_return(rabbitmq_connecton)
       expect(rabbitmq_connecton).to receive(:start)
 
       MessageQueueConsumer.new(config)

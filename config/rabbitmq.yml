@@ -1,5 +1,6 @@
-defaults: &defaults
-  host: localhost
+connection: &connection
+  hosts:
+    - localhost
   port: 5672
   vhost: /
   user: content_register
@@ -7,12 +8,14 @@ defaults: &defaults
   recover_from_connection_close: true
 
 development:
-  <<: *defaults
+  connection:
+    <<: *connection
   exchange: published_documents
   queue: content_register
 
 test:
-  <<: *defaults
-  user: content_register_test
+  connection:
+    <<: *connection
+    user: content_register_test
   exchange: content_register_published_documents_test_exchange
   queue: content_register_test
