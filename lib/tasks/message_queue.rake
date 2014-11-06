@@ -7,6 +7,10 @@ namespace :message_queue do
     # Note: this output is used in the test helpers to detect when this has started.
     puts "Starting message consumer"
     $stdout.flush
-    MessageQueueConsumer.run
+    begin
+      MessageQueueConsumer.run
+    rescue SignalException => e
+      puts "Received #{e}: exiting..."
+    end
   end
 end
