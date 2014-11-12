@@ -45,8 +45,13 @@ describe MessageQueueConsumer do
         MessageQueueConsumer.new(config)
       end
 
-      it "passes an instance of MessageQueueConsumer::Processor" do
-        expect(RabbitmqConsumer).to receive(:new).with(anything, an_instance_of(MessageQueueConsumer::Processor), anything)
+      it "passes an instance of MessageQueueConsumer::HeartbeatMiddlewareProcessor" do
+        expect(RabbitmqConsumer).to receive(:new).with(anything, an_instance_of(MessageQueueConsumer::HeartbeatMiddlewareProcessor), anything)
+        MessageQueueConsumer.new(config)
+      end
+
+      it "passes an instance of MessageQueueConsumer::Processor to the HeartbeatMiddlewareProcessor" do
+        expect(MessageQueueConsumer::HeartbeatMiddlewareProcessor).to receive(:new).with(an_instance_of(MessageQueueConsumer::Processor))
         MessageQueueConsumer.new(config)
       end
 
