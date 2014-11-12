@@ -18,11 +18,27 @@ class MessageQueueConsumer
         @config.fetch(:exchange) => "#",
       },
     }
-    @rmq_consumer = RabbitmqConsumer.new(connection, Processor.new, consumer_config)
+    processor = HeartbeatMiddlewareProcessor.new(Processor.new)
+    @rmq_consumer = RabbitmqConsumer.new(connection, processor, consumer_config)
   end
 
   def run
     @rmq_consumer.run
+  end
+
+  class HeartbeatMiddlewareProcessor
+    def initialize(next_processor)
+      @next_processor = next_processor
+    end
+
+    def call(message)
+      # Ignore heartbeat messages
+      if message.headers.content_type == "application/x-heartbeat"
+        message.ack
+      else
+        @next_processor.call(message)
+      end
+    end
   end
 
   class Processor
