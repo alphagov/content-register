@@ -89,6 +89,33 @@ describe MessageQueueConsumer::Processor do
         expect(entry.format).to eq("article")
       end
     end
+
+    describe "placeholder format prefix special case" do
+      let(:message_data) { base_message_data.merge("format" => "placeholder_answer") }
+
+      it "creates an entry with a format of 'answer'" do
+        expect {
+          subject.call(message)
+        }.to change(Entry, :count).by(1)
+
+        entry = Entry.find_by(:content_id => message_data["content_id"])
+        expect(entry).to be
+        expect(entry.format).to eq("answer")
+      end
+
+      it "replaces an existing format with 'answer'" do
+        entry = create(:entry,
+          :content_id => message_data["content_id"],
+          :title => "Old VAT rates",
+          :format => 'article',
+        )
+
+        subject.call(message)
+
+        entry.reload
+        expect(entry.format).to eq("answer")
+      end
+    end
   end
 
   context "for an item without a content Id" do
