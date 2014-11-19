@@ -49,6 +49,8 @@ class MessageQueueConsumer
         entry = Entry.find_or_initialize_by(:content_id => content_id)
         if message.body_data["format"] == "placeholder" && entry.format.present?
           entry.update_attributes!(message.body_data.slice("title", "base_path"))
+        elsif message.body_data["format"] =~ /\Aplaceholder_(.*)\z/
+          entry.update_attributes!(message.body_data.slice("title", "base_path").merge(:format => $1))
         else
           entry.update_attributes!(message.body_data.slice("title", "format", "base_path"))
         end

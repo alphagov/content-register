@@ -73,4 +73,33 @@ describe "Consuming messages from the publishing-api message queue", :message_qu
       expect(entry.format).to eq("something")
     end
   end
+
+  describe "extracting the real format from a format of the form 'placeholder_foo'" do
+    it "creates an item with the real format" do
+      put_message_on_queue(message_data.merge("format" => "placeholder_answer"))
+
+      eventually do
+        expect(Entry.count).to eq(1)
+        e = Entry.find_by!(:content_id => message_data["content_id"])
+        expect(e).to be
+        expect(e.format).to eq("answer")
+      end
+    end
+
+    it "updates an item with the real format" do
+      entry = create(:entry,
+        :content_id => message_data["content_id"],
+        :title => "Old VAT rates",
+        :format => 'old-article',
+        :base_path => '/old-vat-rates',
+      )
+
+      put_message_on_queue(message_data.merge("format" => "placeholder_answer"))
+
+      eventually do
+        entry.reload
+        expect(entry.format).to eq("answer")
+      end
+    end
+  end
 end
