@@ -46,7 +46,21 @@ class RabbitmqConsumer
 
   def run
     queue.subscribe(:block => true, :manual_ack => true) do |delivery_info, headers, payload|
-      @processor.call(Message.new(delivery_info, headers, payload))
+      begin
+        @processor.call(Message.new(delivery_info, headers, payload))
+      rescue Exception => e
+        Rails.logger.warn "rabbitmq_consumer: aborting due to unhandled exception in processor #{e.class}: #{e.message}"
+        Airbrake.notify_or_ignore(e,
+          parameters: {
+            delivery_info: delivery_info,
+            properties: properties,
+            payload: document_json,
+          }
+        )
+        # Exit to ensure that rabbitMQ requeues outstanding messages etc.
+        # Rely on upstart to restart the worker.
+        exit(1)
+      end
     end
   end
 
