@@ -78,6 +78,32 @@ describe RabbitmqConsumer do
       expect(messages.map(&:headers)).to eq([:headers1, :headers2])
       expect(messages.map(&:body)).to eq(["message1_body", "message2_body"])
     end
+
+    describe "error handling" do
+      let(:error) { Exception.new("Boom!") }
+      let(:erroring_processor) { lambda { |msg| raise error } }
+      let(:consumer) { RabbitmqConsumer.new(mock_session, erroring_processor, options) }
+
+      before :each do
+        allow(mock_queue).to receive(:subscribe)
+          .and_yield(:delivery_info1, :headers1, "message1_body")
+        allow(consumer).to receive(:exit)
+      end
+
+      it "should notify Errbit of the exception" do
+        expect(Airbrake).to receive(:notify_or_ignore).
+          with(error, :parameters => {:delivery_info => :delivery_info1, :properties => :headers1, :payload => "message1_body"})
+
+        consumer.run
+      end
+
+      it "should abort the process" do
+        expect(consumer).to receive(:exit).with(1)
+
+        consumer.run
+      end
+
+    end
   end
 
   describe RabbitmqConsumer::Message do
