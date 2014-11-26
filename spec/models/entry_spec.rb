@@ -12,6 +12,17 @@ describe Entry do
     it { should validate_presence_of(:format) }
   end
 
+  it "supports fields longer than 255 chars" do
+    entry = build(:entry)
+    entry.title = "x" * 300
+    entry.base_path = "/" + "x" * 300
+    entry.format = "f" * 300
+
+    expect {
+      entry.save!
+    }.not_to raise_error
+  end
+
   context "#as_json" do
     let(:entry_attributes) { attributes_for(:entry) }
     let(:entry_json) { create(:entry, entry_attributes).as_json }
