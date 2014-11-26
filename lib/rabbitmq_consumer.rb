@@ -53,8 +53,8 @@ class RabbitmqConsumer
         Airbrake.notify_or_ignore(e,
           parameters: {
             delivery_info: delivery_info,
-            properties: properties,
-            payload: document_json,
+            properties: headers,
+            payload: payload,
           }
         )
         # Exit to ensure that rabbitMQ requeues outstanding messages etc.
