@@ -45,7 +45,8 @@ class MessageQueueConsumer
 
     def call(message)
       content_id = message.body_data["content_id"]
-      if content_id.present?
+      # Ignore non-english items until a more nuanced approach can be created.
+      if content_id.present? && message.body_data["locale"] == "en"
         entry = Entry.find_or_initialize_by(:content_id => content_id)
         if message.body_data["format"] == "placeholder" && entry.format.present?
           entry.update_attributes!(message.body_data.slice("title", "base_path"))
