@@ -11,6 +11,7 @@ describe "Consuming messages from the publishing-api message queue", :message_qu
       "title" => "VAT rates",
       "description" => "Current VAT rates",
       "format" => "answer",
+      "locale" => "en",
       "need_ids" => ["100123", "100124"],
       "public_updated_at" => "2014-05-14T13:00:06Z",
       "updated_at" => "2014-05-14T13:05:06Z",

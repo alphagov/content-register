@@ -10,6 +10,7 @@ describe MessageQueueConsumer::Processor do
       "title" => "VAT rates",
       "description" => "Current VAT rates",
       "format" => "answer",
+      "locale" => "en",
       "need_ids" => ["100123", "100124"],
       "public_updated_at" => "2014-05-14T13:00:06Z",
       "updated_at" => "2014-05-14T13:05:06Z",
@@ -61,6 +62,22 @@ describe MessageQueueConsumer::Processor do
       expect(message).to receive(:ack)
 
       subject.call(message)
+    end
+
+    describe "handling non-english content items" do
+      let(:message_data) { base_message_data.merge("locale" => "fr") }
+
+      it "does not create an Entry" do
+        expect {
+          subject.call(message)
+        }.not_to change(Entry, :count)
+      end
+
+      it "acks the message" do
+        expect(message).to receive(:ack)
+
+        subject.call(message)
+      end
     end
 
     describe "placeholder format special case" do
