@@ -64,6 +64,13 @@ describe MessageQueueConsumer::Processor do
       subject.call(message)
     end
 
+    it "it retries the message on db uniqneness errors" do
+      allow_any_instance_of(Entry).to receive(:update_attributes!).and_raise(PG::UniqueViolation)
+      expect(message).to receive(:retry)
+
+      subject.call(message)
+    end
+
     describe "handling non-english content items" do
       let(:message_data) { base_message_data.merge("locale" => "fr") }
 
