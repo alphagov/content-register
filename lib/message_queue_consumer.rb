@@ -57,6 +57,8 @@ class MessageQueueConsumer
         end
       end
       message.ack
+    rescue PG::UniqueViolation
+      message.retry
     end
   end
 end
