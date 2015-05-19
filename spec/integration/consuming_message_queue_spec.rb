@@ -21,10 +21,24 @@ describe "Consuming messages from the publishing-api message queue", :message_qu
       "details" => {
         "body" => "<p>Some body text</p>\n",
       },
+      "links" => links_hash,
       "routes" => [
         { "path" => "/vat-rates", "type" => 'exact' }
       ],
     }
+  }
+  let(:links_hash) {
+    {
+        "things" => [
+          {
+            "title" => "A thing",
+            "base_path" => "/government/things/a-thing",
+            "api_url" => "https://www.gov.uk/api/content/government/things/a-thing",
+            "web_url" => "https://www.gov.uk/government/things/a-thing",
+            "locale" => "en"
+          }
+        ]
+      }
   }
 
   it "creates an entry for the content item" do
@@ -32,11 +46,12 @@ describe "Consuming messages from the publishing-api message queue", :message_qu
 
     eventually do
       expect(Entry.count).to eq(1)
-      e = Entry.find_by!(:content_id => message_data["content_id"])
-      expect(e).to be
-      expect(e.title).to eq("VAT rates")
-      expect(e.format).to eq("answer")
-      expect(e.base_path).to eq("/vat-rates")
+      entry = Entry.find_by!(:content_id => message_data["content_id"])
+      expect(entry).to be
+      expect(entry.title).to eq("VAT rates")
+      expect(entry.format).to eq("answer")
+      expect(entry.base_path).to eq("/vat-rates")
+      expect(entry.links).to eq(links_hash)
     end
   end
 
@@ -46,6 +61,7 @@ describe "Consuming messages from the publishing-api message queue", :message_qu
       :title => "Old VAT rates",
       :format => 'old-article',
       :base_path => '/old-vat-rates',
+      :links => {},
     )
 
     put_message_on_queue(message_data)
@@ -55,6 +71,7 @@ describe "Consuming messages from the publishing-api message queue", :message_qu
       expect(entry.title).to eq("VAT rates")
       expect(entry.format).to eq("answer")
       expect(entry.base_path).to eq("/vat-rates")
+      expect(entry.links).to eq(links_hash)
     end
   end
 

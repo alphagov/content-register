@@ -53,7 +53,7 @@ class MessageQueueConsumer
         elsif message.body_data["format"] =~ /\Aplaceholder_(.*)\z/
           entry.update_attributes!(message.body_data.slice("title", "base_path").merge(:format => $1))
         else
-          entry.update_attributes!(message.body_data.slice("title", "format", "base_path"))
+          entry.update_attributes!(message.body_data.slice("title", "format", "base_path", "links"))
         end
       end
       message.ack
