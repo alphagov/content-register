@@ -10,7 +10,8 @@ describe "Entry write API", :type => :request do
         "content_id" => content_id,
         "title" => "VAT rates",
         "format" => "answer",
-        "base_path" => "/vat-rates"
+        "base_path" => "/vat-rates",
+        "links" => {},
       }
     }
 
@@ -23,7 +24,7 @@ describe "Entry write API", :type => :request do
       expect {
         put_json entry_path, data
       }.to change {
-        Entry.where(data).count
+        Entry.where(content_id: content_id).count
       }.from(0).to(1)
     end
 
@@ -62,7 +63,18 @@ describe "Entry write API", :type => :request do
         "content_id" => content_id,
         "title" => "VAT rates",
         "format" => "answer",
-        "base_path" => "/vat-rates"
+        "base_path" => "/vat-rates",
+        "links" => {
+          "things" => [
+            {
+              "title" => "A thing",
+              "base_path" => "/government/things/a-thing",
+              "api_url" => "https://www.gov.uk/api/content/government/things/a-thing",
+              "web_url" => "https://www.gov.uk/government/things/a-thing",
+              "locale" => "en"
+            }
+          ]
+        }
       }
     }
     let(:updates) {

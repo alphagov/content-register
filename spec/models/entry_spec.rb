@@ -43,12 +43,12 @@ describe Entry do
   end
 
   context "#as_json" do
-    let(:entry_attributes) { attributes_for(:entry) }
-    let(:entry_json) { create(:entry, entry_attributes).as_json }
+    let(:entry) { create(:entry) }
+    let(:entry_json) { entry.as_json }
 
-    Entry::PUBLIC_ATTRIBUTES.each do |attribute|
+    [:base_path, :format, :title, :links, :content_id].each do |attribute|
       it "includes the #{attribute} attribute" do
-        expect(entry_json[attribute.to_s]).to eq(entry_attributes[attribute])
+        expect(entry_json[attribute.to_s]).to eq(entry.public_send(attribute))
       end
     end
 
