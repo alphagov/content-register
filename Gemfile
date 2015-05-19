@@ -13,6 +13,7 @@ gem 'plek', '~> 1.9'
 gem 'unicorn', '4.8.2'
 
 group :development do
+  gem 'pry'
   gem 'spring'
 end
 

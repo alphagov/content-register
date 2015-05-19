@@ -12,6 +12,25 @@ describe Entry do
     it { should validate_presence_of(:format) }
   end
 
+  it "stores serialized links hash" do
+    entry = build(:entry)
+    links = {
+      "things" => [
+        {
+          "title" => "A thing",
+          "base_path" => "/government/things/a-thing",
+          "api_url" => "https://www.gov.uk/api/content/government/things/a-thing",
+          "web_url" => "https://www.gov.uk/government/things/a-thing",
+          "locale" => "en"
+        }
+      ]
+    }
+
+    entry.links = links
+    entry.save!
+    expect(entry.links).to eq(links)
+  end
+
   it "supports fields longer than 255 chars" do
     entry = build(:entry)
     entry.title = "x" * 300
