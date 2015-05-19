@@ -1,4 +1,5 @@
 class Entry < ActiveRecord::Base
+  serialize :links, Hash
 
   PUBLIC_ATTRIBUTES = [:content_id, :title, :format, :base_path]
   UUID_REGEX = %r{

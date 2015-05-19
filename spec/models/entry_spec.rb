@@ -23,6 +23,25 @@ describe Entry do
     }.not_to raise_error
   end
 
+  it "stores a serialized links hash" do
+    entry = build(:entry)
+    links = {
+      "things" => [
+        {
+          "title" => "A thing",
+          "base_path" => "/government/things/a-thing",
+          "api_url" => "https://www.gov.uk/api/content/government/things/a-thing",
+          "web_url" => "https://www.gov.uk/government/things/a-thing",
+          "locale" => "en"
+        }
+      ]
+    }
+
+    entry.links = links
+    entry.save!
+    expect(entry.reload.links).to eq(links)
+  end
+
   context "#as_json" do
     let(:entry_attributes) { attributes_for(:entry) }
     let(:entry_json) { create(:entry, entry_attributes).as_json }
