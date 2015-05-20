@@ -1,7 +1,7 @@
 class Entry < ActiveRecord::Base
   serialize :links, Hash
 
-  PUBLIC_ATTRIBUTES = [:content_id, :title, :format, :base_path, :links]
+  PUBLIC_ATTRIBUTES = [:content_id, :title, :format, :base_path]
   UUID_REGEX = %r{
     [a-f\d]{8}
     -
@@ -22,6 +22,15 @@ class Entry < ActiveRecord::Base
   def as_json(options = {})
     super(options.merge(only: PUBLIC_ATTRIBUTES)).tap do |as_json_hash|
       as_json_hash['errors'] = errors.to_h.stringify_keys if errors.present?
+      as_json_hash['links'] = expanded_links
+    end
+  end
+
+private
+
+  def expanded_links
+    links.each_with_object({}) do |(key, content_ids), hash|
+      hash[key] = content_ids.map {|content_id| { 'content_id' => content_id} }
     end
   end
 end
