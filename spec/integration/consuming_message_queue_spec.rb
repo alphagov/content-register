@@ -27,19 +27,7 @@ describe "Consuming messages from the publishing-api message queue", :message_qu
       ],
     }
   }
-  let(:links_hash) {
-    {
-        "things" => [
-          {
-            "title" => "A thing",
-            "base_path" => "/government/things/a-thing",
-            "api_url" => "https://www.gov.uk/api/content/government/things/a-thing",
-            "web_url" => "https://www.gov.uk/government/things/a-thing",
-            "locale" => "en"
-          }
-        ]
-      }
-  }
+  let(:links_hash) { { "things" => [SecureRandom.uuid, SecureRandom.uuid] } }
 
   it "creates an entry for the content item" do
     put_message_on_queue(message_data)

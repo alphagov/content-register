@@ -64,17 +64,7 @@ describe "Entry write API", :type => :request do
         "title" => "VAT rates",
         "format" => "answer",
         "base_path" => "/vat-rates",
-        "links" => {
-          "things" => [
-            {
-              "title" => "A thing",
-              "base_path" => "/government/things/a-thing",
-              "api_url" => "https://www.gov.uk/api/content/government/things/a-thing",
-              "web_url" => "https://www.gov.uk/government/things/a-thing",
-              "locale" => "en"
-            }
-          ]
-        }
+        "links" => { "things" => [SecureRandom.uuid, SecureRandom.uuid] },
       }
     }
     let(:updates) {
