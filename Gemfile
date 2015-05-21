@@ -17,6 +17,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'pact'
   gem 'rspec-rails', '~> 3.0.2'
   gem 'database_cleaner', '~> 1.3'
   gem 'factory_girl_rails', '~> 4.5.0'
