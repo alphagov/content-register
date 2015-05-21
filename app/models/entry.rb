@@ -18,6 +18,7 @@ class Entry < ActiveRecord::Base
 
   validates_presence_of :content_id, :title, :format
   validates_format_of :content_id, with: /\A#{UUID_REGEX}\z/
+  validate :validate_links_hash_format
 
   def as_json(options = {})
     super(options.merge(only: PUBLIC_ATTRIBUTES)).tap do |as_json_hash|
@@ -31,6 +32,18 @@ private
   def expanded_links
     links.each_with_object({}) do |(key, content_ids), hash|
       hash[key] = content_ids.map {|content_id| { 'content_id' => content_id} }
+    end
+  end
+
+  def validate_links_hash_format
+    unless links.is_a?(Hash) && links_values_are_valid_format?
+      errors.add(:links, 'is not a valid. See content-register doc/input_example.json for valid format')
+    end
+  end
+
+  def links_values_are_valid_format?
+    links.all? do |(key, value)|
+      value.is_a?(Array) && value.all? { |content_id| content_id =~ /\A#{UUID_REGEX}\z/ }
     end
   end
 end

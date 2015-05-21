@@ -23,13 +23,33 @@ describe Entry do
     }.not_to raise_error
   end
 
-  it "stores a serialized links hash" do
-    entry = build(:entry)
-    links = { "things" => [SecureRandom.uuid, SecureRandom.uuid] }
+  context "the links hash attribute" do
+      it "stores a serialized links hash" do
+        entry = build(:entry)
+        links = { "things" => [SecureRandom.uuid, SecureRandom.uuid] }
 
-    entry.links = links
-    entry.save!
-    expect(entry.reload.links).to eq(links)
+        entry.links = links
+        entry.save!
+        expect(entry.reload.links).to eq(links)
+      end
+
+    it "validates links is a hash" do
+      entry = build(:entry, links: [:an, :array])
+
+      expect(entry).not_to be_valid
+    end
+
+    it "validates links are specificed as an array" do
+      entry = build(:entry, links: { "things" => { 'content_id' => SecureRandom.uuid } })
+
+      expect(entry).not_to be_valid
+    end
+
+    it "validates links contain valid content ids" do
+      entry = build(:entry, links: { "things" => [SecureRandom.uuid, 'invalid-content-id'] })
+
+      expect(entry).not_to be_valid
+    end
   end
 
   context "#as_json" do
