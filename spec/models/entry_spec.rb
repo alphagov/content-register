@@ -24,14 +24,14 @@ describe Entry do
   end
 
   context "the links hash attribute" do
-      it "stores a serialized links hash" do
-        entry = build(:entry)
-        links = { "things" => [SecureRandom.uuid, SecureRandom.uuid] }
+    it "stores a serialized links hash" do
+      entry = build(:entry)
+      links = { "things" => [SecureRandom.uuid, SecureRandom.uuid] }
 
-        entry.links = links
-        entry.save!
-        expect(entry.reload.links).to eq(links)
-      end
+      entry.links = links
+      entry.save!
+      expect(entry.reload.links).to eq(links)
+    end
 
     it "validates links is a hash" do
       entry = build(:entry, links: [:an, :array])
