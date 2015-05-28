@@ -17,7 +17,7 @@ describe "routing of entry requests", :type => :routing do
       expect(put: "/entry/#{content_id}").to route_to({
         :controller => 'entries',
         :action => 'update',
-        :content_id => content_id,
+        :id => content_id,
       })
     end
 

@@ -5,7 +5,7 @@ class EntriesController < ApplicationController
   end
 
   def update
-    entry = Entry.find_or_initialize_by(content_id: params[:content_id])
+    entry = Entry.find_or_initialize_by(content_id: params[:id])
     status = if entry.update_attributes(request_data)
       (entry.created_at == entry.updated_at) ? :created : :ok
     else

@@ -2,7 +2,6 @@ require 'rails_helper'
 
 describe "Entry write API", :type => :request do
   let(:content_id) { SecureRandom.uuid }
-  let(:entry_path) { "/entry/#{content_id}" }
 
   context "creating a new entry with valid attributes" do
     let(:data) {
@@ -10,26 +9,26 @@ describe "Entry write API", :type => :request do
         "content_id" => content_id,
         "title" => "VAT rates",
         "format" => "answer",
-        "base_path" => "/vat-rates"
+        "base_path" => "/vat-rates",
+        "links" => {},
       }
     }
 
+    before do
+      put_json entry_path(content_id), data
+    end
+
     it "responds with a CREATED status" do
-      put_json entry_path, data
       expect(response).to have_http_status(:created)
     end
 
-    it "creates one entry" do
-      expect {
-        put_json entry_path, data
-      }.to change {
-        Entry.where(data).count
-      }.from(0).to(1)
+    it "creates an entry" do
+      expect(Entry.where(content_id: content_id).count).to eq(1)
     end
 
     it "responds with the created entry as JSON in the body" do
-      put_json entry_path, data
-      expect(parsed_response_body).to eq(data)
+      entry = Entry.find_by(content_id: content_id)
+      expect(parsed_response_body).to eq(entry.as_json)
     end
   end
 
@@ -43,28 +42,22 @@ describe "Entry write API", :type => :request do
       }
     }
 
+    before do
+      put_json entry_path(content_id), invalid_data
+    end
+
     it "returns Unprocessable Entity status" do
-      put_json entry_path, invalid_data
       expect(response).to have_http_status(:unprocessable_entity)
     end
 
     it "includes validation error messages in the response" do
-      put_json entry_path, invalid_data
-
       expect(parsed_response_body).to include(invalid_data)
       expect(parsed_response_body['errors']['title']).to include("can't be blank")
     end
   end
 
   context "updating an existing entry" do
-    let(:data) {
-      {
-        "content_id" => content_id,
-        "title" => "VAT rates",
-        "format" => "answer",
-        "base_path" => "/vat-rates"
-      }
-    }
+    let(:entry) { create(:entry) }
     let(:updates) {
       {
         "title" => "Revised VAT rates",
@@ -73,25 +66,21 @@ describe "Entry write API", :type => :request do
     }
 
     before do
-      put_json entry_path, data
+      put_json entry_path(entry.content_id), updates
     end
 
     it "responds with OK status" do
-      put_json entry_path, updates
       expect(response).to have_http_status(:ok)
     end
 
     it "updates the exisiting entry" do
-      put_json entry_path, updates
-
-      updated_entry = Entry.where(content_id: content_id).first
-      expect(updated_entry.title).to eq('Revised VAT rates')
-      expect(updated_entry.base_path).to eq('/revised-vat-rates')
+      entry.reload
+      expect(entry.title).to eq('Revised VAT rates')
+      expect(entry.base_path).to eq('/revised-vat-rates')
     end
 
     it "responds with the updated entry as JSON in the body" do
-      put_json entry_path, updates
-      expect(parsed_response_body).to eq(data.merge(updates))
+      expect(parsed_response_body).to eq(entry.reload.as_json)
     end
   end
 end

@@ -2,5 +2,14 @@
 {
   "title": "Content Title",
   "format": "the format of this content",
-  "base_path": "/path-on-gov-uk"
+  "base_path": "/path-on-gov-uk",
+  "links": {
+    "things": [
+      "ea5126d0-590a-4c9d-bc9f-16b32b1fd261",
+      "a30d61aa-39e9-4a8a-9b7a-de4966a6797a"
+    ],
+    "more_things": [
+      "90a19160-9355-4d49-b61b-aa1851fe0a4c"
+    ]
+  }
 }

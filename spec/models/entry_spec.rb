@@ -23,13 +23,43 @@ describe Entry do
     }.not_to raise_error
   end
 
-  context "#as_json" do
-    let(:entry_attributes) { attributes_for(:entry) }
-    let(:entry_json) { create(:entry, entry_attributes).as_json }
+  context "the links hash attribute" do
+    it "stores a serialized links hash" do
+      entry = build(:entry)
+      links = { "things" => [SecureRandom.uuid, SecureRandom.uuid] }
 
-    Entry::PUBLIC_ATTRIBUTES.each do |attribute|
+      entry.links = links
+      entry.save!
+      expect(entry.reload.links).to eq(links)
+    end
+
+    it "validates links is a hash" do
+      entry = build(:entry, links: [:an, :array])
+
+      expect(entry).not_to be_valid
+    end
+
+    it "validates links are specificed as an array" do
+      entry = build(:entry, links: { "things" => { 'content_id' => SecureRandom.uuid } })
+
+      expect(entry).not_to be_valid
+    end
+
+    it "validates links contain valid content ids" do
+      entry = build(:entry, links: { "things" => [SecureRandom.uuid, 'invalid-content-id'] })
+
+      expect(entry).not_to be_valid
+    end
+  end
+
+  context "#as_json" do
+    let(:entry) { create(:entry, links: links) }
+    let(:entry_json) { entry.as_json }
+    let(:links) { { "things" => [SecureRandom.uuid, SecureRandom.uuid] } }
+
+    [:base_path, :format, :title, :content_id].each do |attribute|
       it "includes the #{attribute} attribute" do
-        expect(entry_json[attribute.to_s]).to eq(entry_attributes[attribute])
+        expect(entry_json[attribute.to_s]).to eq(entry.public_send(attribute))
       end
     end
 
@@ -37,6 +67,17 @@ describe Entry do
       it "excludes #{attribute} attribute" do
         expect(entry_json[attribute.to_s]).to be_nil
       end
+    end
+
+    it "expands linked items to a hash, including a key for 'content_id'" do
+      expanded_links = {
+        "things" => [
+          { "content_id" => links['things'][0] },
+          { "content_id" => links['things'][1] },
+        ]
+      }
+
+      expect(entry_json['links']).to eq(expanded_links)
     end
 
     it "includes errors hash when the object is invalid" do

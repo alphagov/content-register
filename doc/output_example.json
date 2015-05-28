@@ -3,12 +3,22 @@
     "content_id": "a5d86183-7252-4426-aad2-3f732f7f2581",
     "title": "Content Title",
     "format": "news-article",
-    "base_path": "/path-on-gov-uk"
+    "base_path": "/path-on-gov-uk",
+    "links": {
+      "things": [
+        { "content_id": "ea5126d0-590a-4c9d-bc9f-16b32b1fd261" },
+        { "content_id": "a30d61aa-39e9-4a8a-9b7a-de4966a6797a" }
+      ],
+      "more_things": [
+        { "content_id": "90a19160-9355-4d49-b61b-aa1851fe0a4c" }
+      ]
+    }
   },
   {
     "content_id": "000b4062-8eaa-45ea-ba3c-7c6683a8cbbe",
     "title": "Content Title 2",
     "format": "news-article",
-    "base_path": "/path-on-gov-uk-2"
+    "base_path": "/path-on-gov-uk-2",
+    "links": {}
   }
 ]
