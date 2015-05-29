@@ -1,4 +1,7 @@
 require 'pact/provider/rspec'
+Pact.configure do | config |
+  config.reports_dir = "spec/reports/pacts"
+end
 
 Pact.service_provider "Content register" do
   honours_pact_with 'GDS API Adapters' do
