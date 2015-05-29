@@ -20,9 +20,5 @@ describe "routing of entry requests", :type => :routing do
         :id => content_id,
       })
     end
-
-    it "should 404 with invalid content_id parameter" do
-      expect(put: "/entry/bad-#{content_id}").not_to be_routable
-    end
   end
 end
