@@ -1,6 +1,9 @@
 class EntriesController < ApplicationController
   def index
     entries = Entry.where(format: params[:format]).order('created_at DESC')
+
+    expires_in 15.minutes, :public => true
+
     render json: entries
   end
 

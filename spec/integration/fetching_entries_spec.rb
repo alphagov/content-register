@@ -11,6 +11,7 @@ describe "Entry read API", :type => :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eq("application/json")
+      expect(response.cache_control).to eq({max_age: "900", public: true})
 
       expected_response_body = entries_for_answers.reverse.map { |entry| entry.as_json }
       expect(parsed_response_body).to eq(expected_response_body)
