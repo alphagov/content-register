@@ -57,7 +57,7 @@ class MessageQueueConsumer
         end
       end
       message.ack
-    rescue PG::UniqueViolation
+    rescue ActiveRecord::RecordNotUnique
       message.retry
     end
   end
