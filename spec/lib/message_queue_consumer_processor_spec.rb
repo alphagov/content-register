@@ -65,7 +65,11 @@ describe MessageQueueConsumer::Processor do
     end
 
     it "it retries the message on db uniqneness errors" do
-      allow_any_instance_of(Entry).to receive(:update_attributes!).and_raise(PG::UniqueViolation)
+      err = ActiveRecord::RecordNotUnique.new(
+        "something",
+        PG::UniqueViolation.new('ERROR:  duplicate key value violates unique constraint "index_entries_on_content_id"')
+      )
+      allow_any_instance_of(Entry).to receive(:update_attributes!).and_raise(err)
       expect(message).to receive(:retry)
 
       subject.call(message)
