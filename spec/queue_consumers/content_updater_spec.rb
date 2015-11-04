@@ -1,8 +1,9 @@
 require 'rails_helper'
+require 'govuk_message_queue_consumer/test_helpers'
 
-require 'message_queue_consumer'
+describe ContentUpdater do
+  it_behaves_like "a message queue processor"
 
-describe MessageQueueConsumer::Processor do
   let(:base_message_data) {
     {
       "base_path" => "/vat-rates",
@@ -25,14 +26,14 @@ describe MessageQueueConsumer::Processor do
       ],
     }
   }
-  let(:message) { instance_double("RabbitmqConsumer::Message", :body_data => message_data, :ack => nil) }
+  let(:message) { GovukMessageQueueConsumer::MockMessage.new(message_data) }
 
   context "for an item with a content Id" do
     let(:message_data) { base_message_data }
 
     it "creates an entry" do
       expect {
-        subject.call(message)
+        subject.process(message)
       }.to change(Entry, :count).by(1)
 
       entry = Entry.find_by(:content_id => message_data["content_id"])
@@ -50,7 +51,7 @@ describe MessageQueueConsumer::Processor do
         :base_path => '/old-vat-rates',
       )
 
-      subject.call(message)
+      subject.process(message)
 
       entry.reload
       expect(entry.title).to eq("VAT rates")
@@ -59,9 +60,9 @@ describe MessageQueueConsumer::Processor do
     end
 
     it "acks the message" do
-      expect(message).to receive(:ack)
+      subject.process(message)
 
-      subject.call(message)
+      expect(message).to be_acked
     end
 
     it "it retries the message on db uniqneness errors" do
@@ -70,9 +71,10 @@ describe MessageQueueConsumer::Processor do
         PG::UniqueViolation.new('ERROR:  duplicate key value violates unique constraint "index_entries_on_content_id"')
       )
       allow_any_instance_of(Entry).to receive(:update_attributes!).and_raise(err)
-      expect(message).to receive(:retry)
 
-      subject.call(message)
+      subject.process(message)
+
+      expect(message).to be_retried
     end
 
     describe "handling non-english content items" do
@@ -80,14 +82,14 @@ describe MessageQueueConsumer::Processor do
 
       it "does not create an Entry" do
         expect {
-          subject.call(message)
+          subject.process(message)
         }.not_to change(Entry, :count)
       end
 
       it "acks the message" do
-        expect(message).to receive(:ack)
+        subject.process(message)
 
-        subject.call(message)
+        expect(message).to be_acked
       end
     end
 
@@ -96,11 +98,10 @@ describe MessageQueueConsumer::Processor do
 
       it "creates an entry with a format of 'placeholder'" do
         expect {
-          subject.call(message)
+          subject.process(message)
         }.to change(Entry, :count).by(1)
 
         entry = Entry.find_by(:content_id => message_data["content_id"])
-        expect(entry).to be
         expect(entry.format).to eq("placeholder")
       end
 
@@ -111,7 +112,7 @@ describe MessageQueueConsumer::Processor do
           :format => 'article',
         )
 
-        subject.call(message)
+        subject.process(message)
 
         entry.reload
         expect(entry.format).to eq("article")
@@ -123,11 +124,10 @@ describe MessageQueueConsumer::Processor do
 
       it "creates an entry with a format of 'answer'" do
         expect {
-          subject.call(message)
+          subject.process(message)
         }.to change(Entry, :count).by(1)
 
         entry = Entry.find_by(:content_id => message_data["content_id"])
-        expect(entry).to be
         expect(entry.format).to eq("answer")
       end
 
@@ -138,7 +138,7 @@ describe MessageQueueConsumer::Processor do
           :format => 'article',
         )
 
-        subject.call(message)
+        subject.process(message)
 
         entry.reload
         expect(entry.format).to eq("answer")
@@ -153,13 +153,14 @@ describe MessageQueueConsumer::Processor do
 
     it "does not create an Entry" do
       expect {
-        subject.call(message)
+        subject.process(message)
       }.not_to change(Entry, :count)
     end
 
     it "acks the message" do
-      expect(message).to receive(:ack)
-      subject.call(message)
+      subject.process(message)
+
+      expect(message).to be_acked
     end
   end
 end

@@ -4,7 +4,7 @@ gem 'rails', '4.1.11'
 gem 'rails-api', '0.2.1'
 
 gem 'pg', '0.17.1'
-gem 'bunny', '~> 1.5'
+gem 'govuk_message_queue_consumer', '~> 2.0'
 
 gem 'logstasher', '0.5.0'
 gem 'airbrake', '4.0.0'

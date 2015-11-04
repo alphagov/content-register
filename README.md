@@ -43,5 +43,5 @@ This app has a worker to listen to messages that content-store publishes to the
 published_documents exchange on RabbitMQ.  To start the worker in development run
 
 ``` sh
-bundle exec rake message_queue:consumer
+govuk_setenv content-register bundle exec rake message_queue:consumer
 ```
