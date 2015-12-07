@@ -43,14 +43,17 @@ class MessageQueueConsumer
 
   class Processor
 
+    NON_RENDERABLE_FORMATS = %w{gone redirect}
+
     def call(message)
       content_id = message.body_data["content_id"]
+      format = message.body_data["format"]
       # Ignore non-english items until a more nuanced approach can be created.
-      if content_id.present? && message.body_data["locale"] == "en"
+      if renderable_content?(format) && content_id.present? && message.body_data["locale"] == "en"
         entry = Entry.find_or_initialize_by(:content_id => content_id)
-        if message.body_data["format"] == "placeholder" && entry.format.present?
+        if format == "placeholder" && entry.format.present?
           entry.update_attributes!(message.body_data.slice("title", "base_path"))
-        elsif message.body_data["format"] =~ /\Aplaceholder_(.*)\z/
+        elsif format =~ /\Aplaceholder_(.*)\z/
           entry.update_attributes!(message.body_data.slice("title", "base_path").merge(:format => $1))
         else
           entry.update_attributes!(message.body_data.slice("title", "format", "base_path", "links"))
@@ -59,6 +62,11 @@ class MessageQueueConsumer
       message.ack
     rescue ActiveRecord::RecordNotUnique
       message.retry
+    end
+
+    private
+    def renderable_content?(format)
+      NON_RENDERABLE_FORMATS.exclude?(format)
     end
   end
 end
