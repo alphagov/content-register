@@ -162,4 +162,24 @@ describe MessageQueueConsumer::Processor do
       subject.call(message)
     end
   end
+
+  context "for a non-renderable item" do
+    let(:message_data) {
+      base_message_data.tap do |h|
+        h.delete("title")
+        h["format"] = "gone"
+      end
+    }
+
+    it "does not create an Entry" do
+      expect {
+        subject.call(message)
+      }.not_to change(Entry, :count)
+    end
+
+    it "does not validate and acks the message" do
+      expect(message).to receive(:ack)
+      subject.call(message)
+    end
+  end
 end
