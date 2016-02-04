@@ -27,6 +27,21 @@ class Entry < ActiveRecord::Base
     end
   end
 
+  def links=(links_hash)
+    super unless links_hash.is_a?(Hash)
+
+    clean_hash = {}
+    links_hash.each do |link_type, array_of_content_ids|
+      if array_of_content_ids.is_a?(Array)
+        array_of_content_ids.select! { |id| id =~ /\A#{UUID_REGEX}\z/ }
+      end
+
+      clean_hash[link_type] = array_of_content_ids
+    end
+
+    super(clean_hash)
+  end
+
 private
 
   def expanded_links

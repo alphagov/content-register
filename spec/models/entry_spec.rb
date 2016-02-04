@@ -45,10 +45,12 @@ describe Entry do
       expect(entry).not_to be_valid
     end
 
-    it "validates links contain valid content ids" do
-      entry = build(:entry, links: { "things" => [SecureRandom.uuid, 'invalid-content-id'] })
+    it "strips links that aren't valid content IDs" do
+      valid_content_id = SecureRandom.uuid
+      entry = build(:entry, links: { "things" => [valid_content_id, 'invalid-content-id'] })
 
-      expect(entry).not_to be_valid
+      expect(entry).to be_valid
+      expect(entry.links["things"]).to eq([valid_content_id])
     end
   end
 
